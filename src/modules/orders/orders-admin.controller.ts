@@ -57,6 +57,7 @@ export class OrdersAdminController {
 
   @Get()
   @Roles(...ROLE_GROUPS.ORDER.FINANCIAL)
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Get all orders',
@@ -83,6 +84,7 @@ export class OrdersAdminController {
 
   @Get(':id')
   @Roles(...ROLE_GROUPS.ORDER.FINANCIAL)
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Get order by ID',
@@ -106,6 +108,7 @@ export class OrdersAdminController {
 
   @Patch(':id')
   @Roles(...ROLE_GROUPS.ORDER.MANAGEMENT)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update an order',
     description: 'Update order details including status',

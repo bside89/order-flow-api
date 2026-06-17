@@ -1,6 +1,16 @@
+import { resolveThrottleLimit } from '@/config/throttle.config';
+import { JwtRefreshAuthGuard } from '@/modules/auth/providers/guards/jwt-refresh.guard';
 import { GetUser } from '@/shared/decorators/get-user.decorator';
 import { ErrorResponseDto } from '@/shared/dto/error-response.dto';
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -12,12 +22,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { resolveThrottleLimit } from '@/config/throttle.config';
 import { AUTH_SERVICE } from './constants/auth.token';
 import { Public } from './decorators/public.decorator';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtRefreshAuthGuard } from '@/modules/auth/providers/guards/jwt-refresh.guard';
 import type { IAuthService } from './interfaces/auth-service.interface';
 import type { RequestUser } from './interfaces/request-user.interface';
 
@@ -29,6 +37,7 @@ export class AuthController {
 
   @Post('login')
   @Public()
+  @HttpCode(HttpStatus.CREATED)
   @Throttle({ default: { limit: resolveThrottleLimit(5) } })
   @ApiOperation({
     summary: 'User login',
@@ -53,6 +62,7 @@ export class AuthController {
 
   @Post('refresh')
   @Public()
+  @HttpCode(HttpStatus.CREATED)
   @UseGuards(JwtRefreshAuthGuard)
   @Throttle({ default: { limit: resolveThrottleLimit(20) } })
   @ApiOperation({
@@ -74,6 +84,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @HttpCode(HttpStatus.CREATED)
   @Throttle({ default: { limit: resolveThrottleLimit(20) } })
   @ApiOperation({
     summary: 'User logout',

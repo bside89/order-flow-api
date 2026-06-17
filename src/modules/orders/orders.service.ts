@@ -1,6 +1,11 @@
+import { NotificationEvent } from '@/modules/notifications/enums/notification-event.enum';
+import { NotificationType } from '@/modules/notifications/enums/notification-type.enum';
 import { I18N_ORDERS } from '@/shared/constants/i18n';
 import { LOCK_KEY } from '@/shared/constants/lock.key';
 import { PagCursorResultDto } from '@/shared/dto/pag-cursor-result.dto';
+import { IDEMPOTENCY_SERVICE } from '@/shared/modules/cache/constants/idempotency.token';
+import { ORDER_KEY } from '@/shared/modules/cache/constants/order.key';
+import type { IIdempotencyService } from '@/shared/modules/cache/interfaces/idempotency-service.interface';
 import { DbGuardService } from '@/shared/modules/db-guard/db-guard.service';
 import { OUTBOX_SERVICE } from '@/shared/modules/outbox/constants/outbox.token';
 import type { IOutboxService } from '@/shared/modules/outbox/interfaces/outbox-service.interface';
@@ -21,9 +26,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IDEMPOTENCY_SERVICE } from '@/shared/modules/cache/constants/idempotency.token';
-import { ORDER_KEY } from '@/shared/modules/cache/constants/order.key';
-import type { IIdempotencyService } from '@/shared/modules/cache/interfaces/idempotency-service.interface';
 import type { RequestUser } from '../auth/interfaces/request-user.interface';
 import { ITEMS_SERVICE } from '../items/constants/items.token';
 import type { IItemsService } from '../items/interfaces/items-service.interface';
@@ -33,7 +35,6 @@ import type { IPaymentsService } from '../payments/interfaces/payments-service.i
 import { ORDER_ITEM_REPOSITORY, ORDER_REPOSITORY } from './constants/orders.token';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderByUserQueryDto } from './dto/order-by-user-query.dto';
-import { UpdateOrderPaymentDto } from './dto/order-payment.dto';
 import { OrderQueryDto } from './dto/order-query.dto';
 import { OrderResponseDto, PublicOrderResponseDto } from './dto/order-response.dto';
 import { ShipOrderDto } from './dto/ship-order.dto';
@@ -49,8 +50,6 @@ import { OrderTransitionPolicy } from './helpers/order-transition-policy';
 import type { IOrderItemRepository } from './interfaces/order-item-repository.interface';
 import type { IOrderRepository } from './interfaces/order-repository.interface';
 import { IOrdersService } from './interfaces/orders-service.interface';
-import { NotificationType } from '@/modules/notifications/enums/notification-type.enum';
-import { NotificationEvent } from '@/modules/notifications/enums/notification-event.enum';
 
 @Injectable()
 export class OrdersService extends BaseService implements IOrdersService {
@@ -360,39 +359,33 @@ export class OrdersService extends BaseService implements IOrdersService {
 
   //#region Webhook methods
 
-  markPaymentAsSucceeded(dto: UpdateOrderPaymentDto): Promise<OrderResponseDto> {
-    return this.guard.lockAndTransaction(
-      LOCK_KEY.ORDER.UPDATE(dto.orderId),
-      async () => this._markPaymentAsSucceeded(dto),
+  markPaymentAsSucceeded(orderId: string): Promise<OrderResponseDto> {
+    return this.guard.lockAndTransaction(LOCK_KEY.ORDER.UPDATE(orderId), async () =>
+      this._markPaymentAsSucceeded(orderId),
     );
   }
 
-  private async _markPaymentAsSucceeded(
-    dto: UpdateOrderPaymentDto,
-  ): Promise<OrderResponseDto> {
-    const order = await this.getOrderOrThrow(dto.orderId);
+  private async _markPaymentAsSucceeded(orderId: string): Promise<OrderResponseDto> {
+    const order = await this.getOrderOrThrow(orderId);
 
     order.status = OrderStatus.PAID;
 
     await this.orderRepository.save(order);
 
     // Kick off the order processing pipeline
-    await this.outboxService.add(new ProcessOrderJobPayload(dto.orderId));
+    await this.outboxService.add(new ProcessOrderJobPayload(orderId));
 
     return EntityMapper.map(order, OrderResponseDto);
   }
 
-  markPaymentAsFailed(dto: UpdateOrderPaymentDto): Promise<OrderResponseDto> {
-    return this.guard.lockAndTransaction(
-      LOCK_KEY.ORDER.UPDATE(dto.orderId),
-      async () => this._markPaymentAsFailed(dto),
+  markPaymentAsFailed(orderId: string): Promise<OrderResponseDto> {
+    return this.guard.lockAndTransaction(LOCK_KEY.ORDER.UPDATE(orderId), async () =>
+      this._markPaymentAsFailed(orderId),
     );
   }
 
-  private async _markPaymentAsFailed(
-    dto: UpdateOrderPaymentDto,
-  ): Promise<OrderResponseDto> {
-    const order = await this.getOrderOrThrow(dto.orderId);
+  private async _markPaymentAsFailed(orderId: string): Promise<OrderResponseDto> {
+    const order = await this.getOrderOrThrow(orderId);
 
     // Enqueue the cancellation job (restores stock and updates status)
     await this.outboxService.add(new CancelOrderJobPayload(order.id));

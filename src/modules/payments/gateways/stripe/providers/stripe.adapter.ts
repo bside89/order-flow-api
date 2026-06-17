@@ -5,7 +5,7 @@ import { PgwCustomerResponseDto } from '@/modules/payments/dto/pgw-customer-resp
 import { PgwPaymentResponseDto } from '@/modules/payments/dto/pgw-payment-response.dto';
 import { PgwRefundResponseDto } from '@/modules/payments/dto/pgw-refund-response.dto';
 import { UpdatePgwCustomerDto } from '@/modules/payments/dto/update-pgw-customer.dto';
-import { IPaymentsGatewayAdapter } from '@/modules/payments/interfaces/payments-gateway-adapter.interface';
+import { PaymentsGatewayAdapter } from '@/modules/payments/interfaces/payments-gateway-adapter.interface';
 import { I18N_PAYMENTS } from '@/shared/constants/i18n';
 import { PagCursorResultDto } from '@/shared/dto/pag-cursor-result.dto';
 import { CursorParams } from '@/shared/types/cursor-params.type';
@@ -29,7 +29,7 @@ import {
 } from '../types/stripe.type';
 
 @Injectable()
-export class StripeAdapter implements IPaymentsGatewayAdapter {
+export class StripeAdapter implements PaymentsGatewayAdapter {
   constructor(@Inject(STRIPE_CLIENT) private readonly stripe: Stripe.Stripe) {}
 
   //#region Customers

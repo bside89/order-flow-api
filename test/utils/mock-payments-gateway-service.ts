@@ -1,5 +1,5 @@
+import { PaymentsGatewayAdapter } from '@/modules/payments/interfaces/payments-gateway-adapter.interface';
 import { randomUUID } from 'crypto';
-import { IPaymentsGatewayAdapter } from '@/modules/payments/interfaces/payments-gateway-adapter.interface';
 
 const makeCustomer = (id: string) => ({
   id,
@@ -47,4 +47,4 @@ export const paymentsGatewayServiceMock = {
   findOnePayment: jest.fn().mockResolvedValue(makePayment('pi_test_retrieve')),
   createRefundPayment: jest.fn().mockResolvedValue(makeRefund('re_test_create')),
   findOneRefundPayment: jest.fn().mockResolvedValue(makeRefund('re_test_retrieve')),
-} as jest.Mocked<IPaymentsGatewayAdapter>;
+} as jest.Mocked<PaymentsGatewayAdapter>;

@@ -102,6 +102,7 @@ export class ItemsAdminController {
 
   @Get()
   @Roles(...ROLE_GROUPS.COMMON.ADMIN_MANAGEMENT)
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Get all items (admin)',
@@ -123,6 +124,7 @@ export class ItemsAdminController {
 
   @Get(':id')
   @Roles(...ROLE_GROUPS.COMMON.ADMIN_MANAGEMENT)
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({ summary: 'Get item by ID (admin)' })
   @ApiParam({
@@ -141,6 +143,7 @@ export class ItemsAdminController {
 
   @Patch(':id')
   @Roles(...ROLE_GROUPS.COMMON.ADMIN_MANAGEMENT)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update an item', description: 'Requires admin role.' })
   @ApiParam({
     name: 'id',

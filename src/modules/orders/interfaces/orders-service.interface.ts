@@ -4,7 +4,6 @@ import { IBaseService } from '@/shared/providers/services/base-service.interface
 import type { CursorParams } from '@/shared/types/cursor-params.type';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { OrderByUserQueryDto } from '../dto/order-by-user-query.dto';
-import { UpdateOrderPaymentDto } from '../dto/order-payment.dto';
 import { OrderQueryDto } from '../dto/order-query.dto';
 import { OrderResponseDto, PublicOrderResponseDto } from '../dto/order-response.dto';
 import { ShipOrderDto } from '../dto/ship-order.dto';
@@ -39,9 +38,9 @@ export interface IOrdersService extends IBaseService {
 
   adminRemove(id: string): Promise<void>;
 
-  markPaymentAsSucceeded(dto: UpdateOrderPaymentDto): Promise<OrderResponseDto>;
+  markPaymentAsSucceeded(orderId: string): Promise<OrderResponseDto>;
 
-  markPaymentAsFailed(dto: UpdateOrderPaymentDto): Promise<OrderResponseDto>;
+  markPaymentAsFailed(orderId: string): Promise<OrderResponseDto>;
 
   ship(id: string, dto: ShipOrderDto): Promise<OrderResponseDto>;
 

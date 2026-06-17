@@ -1,10 +1,12 @@
 import { Public } from '@/modules/auth/decorators/public.decorator';
+import { StripeWebhookResult } from '@/modules/payments/gateways/stripe/types/stripe.type';
 import { ErrorResponseDto } from '@/shared/dto/error-response.dto';
 import {
   BadRequestException,
   Controller,
   Headers,
   HttpCode,
+  HttpStatus,
   Post,
   RawBody,
 } from '@nestjs/common';
@@ -16,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { StripeAdapter } from './providers/stripe.adapter';
-import { StripeWebhookResult } from '@/modules/payments/gateways/stripe/types/stripe.type';
 
 @Controller('stripe')
 @ApiTags('payments')
@@ -25,7 +26,7 @@ export class StripeController {
 
   @Post('webhook')
   @Public()
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Stripe webhook handler',
     description:

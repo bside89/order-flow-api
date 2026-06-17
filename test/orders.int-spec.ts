@@ -249,13 +249,9 @@ describe('Orders (Integration)', () => {
         .mockRejectedValueOnce(new Error('Simulated Outbox insertion failure'));
 
       // Act: simulate the Stripe webhook callback — should fail due to Outbox error
-      await expect(
-        ordersService.markPaymentAsSucceeded({
-          orderId,
-          paymentId: 'pi_test',
-          paymentStatus: 'succeeded',
-        }),
-      ).rejects.toThrow('Simulated Outbox insertion failure');
+      await expect(ordersService.markPaymentAsSucceeded(orderId)).rejects.toThrow(
+        'Simulated Outbox insertion failure',
+      );
 
       // Assert: the status update (PENDING → PAID) was rolled back
       const [order] = await dataSource.query(
@@ -326,11 +322,7 @@ describe('Orders (Integration)', () => {
       const orderId = createdOrder.id;
 
       // Simulate the Stripe payment success webhook — sets PAID and enqueues ORDER_PROCESS.
-      await ordersService.markPaymentAsSucceeded({
-        orderId,
-        paymentId: 'pi_test_full_flow',
-        paymentStatus: 'succeeded',
-      });
+      await ordersService.markPaymentAsSucceeded(orderId);
 
       // Wait for the async BullMQ pipeline to advance the order to PROCESSED.
       //   webhook → markPaymentAsSucceeded → PAID + Outbox → ORDER_PROCESS
@@ -450,11 +442,7 @@ describe('Orders (Integration)', () => {
         const orderId = createdOrder.id;
 
         // Simulate the Stripe payment success webhook.
-        await ordersService.markPaymentAsSucceeded({
-          orderId,
-          paymentId: 'pi_comp_delivery_fail',
-          paymentStatus: 'succeeded',
-        });
+        await ordersService.markPaymentAsSucceeded(orderId);
 
         // Wait for the compensation pipeline to complete:
         //   webhook → markPaymentAsSucceeded → PAID + Outbox → ORDER_PROCESS
@@ -543,11 +531,7 @@ describe('Orders (Integration)', () => {
 
       // Act: simulate the Stripe payment failure webhook.
       // This enqueues ORDER_CANCEL (without touching the order status directly).
-      await ordersService.markPaymentAsFailed({
-        orderId,
-        paymentId: 'pi_test_failed',
-        paymentStatus: 'payment_failed',
-      });
+      await ordersService.markPaymentAsFailed(orderId);
 
       // Wait for the cancellation pipeline to complete:
       //   webhook → markPaymentAsFailed → Outbox → ORDER_CANCEL

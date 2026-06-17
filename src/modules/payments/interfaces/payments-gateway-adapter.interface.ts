@@ -8,7 +8,7 @@ import { PgwPaymentResponseDto } from '../dto/pgw-payment-response.dto';
 import { PgwRefundResponseDto } from '../dto/pgw-refund-response.dto';
 import { UpdatePgwCustomerDto } from '../dto/update-pgw-customer.dto';
 
-export interface IPaymentsGatewayAdapter {
+export interface PaymentsGatewayAdapter {
   createCustomer(dto: CreatePgwCustomerDto): Promise<PgwCustomerResponseDto>;
 
   findAllCustomers(

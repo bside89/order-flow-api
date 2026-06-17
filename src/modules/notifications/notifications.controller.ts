@@ -4,7 +4,16 @@ import { ErrorResponseDto } from '@/shared/dto/error-response.dto';
 import { PagCursorResultDto } from '@/shared/dto/pag-cursor-result.dto';
 import { CursorParamsPipe } from '@/shared/providers/pipes/cursor-params.pipe';
 import type { CursorParams } from '@/shared/types/cursor-params.type';
-import { Controller, Get, Inject, Param, Patch, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Param,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import {
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -34,6 +43,7 @@ export class NotificationsController {
   ) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'List notifications',
@@ -62,6 +72,7 @@ export class NotificationsController {
   }
 
   @Patch(':id/read')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Mark notification as read',
     description: 'Marks a specific notification as read for the authenticated user.',
@@ -86,6 +97,7 @@ export class NotificationsController {
   }
 
   @Get('unread/count')
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Count unread notifications',
@@ -101,6 +113,7 @@ export class NotificationsController {
   }
 
   @Get('has-new')
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Check for new notifications',

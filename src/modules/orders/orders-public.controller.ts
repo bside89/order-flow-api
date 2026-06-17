@@ -1,3 +1,4 @@
+import { resolveThrottleLimit } from '@/config/throttle.config';
 import { I18N_COMMON } from '@/shared/constants/i18n';
 import { GetUser } from '@/shared/decorators/get-user.decorator';
 import { PagCursorResultDto } from '@/shared/dto/pag-cursor-result.dto';
@@ -34,7 +35,6 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { resolveThrottleLimit } from '@/config/throttle.config';
 import type { RequestUser } from '../auth/interfaces/request-user.interface';
 import { ORDERS_SERVICE } from './constants/orders.token';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -92,6 +92,7 @@ export class OrdersPublicController {
   }
 
   @Get('me')
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Get my orders',
@@ -118,6 +119,7 @@ export class OrdersPublicController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @SkipThrottle()
   @ApiOperation({
     summary: 'Get order by ID',

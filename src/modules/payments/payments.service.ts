@@ -18,7 +18,7 @@ import { PaymentCursorQueryDto } from './dto/payment-cursor-query.dto';
 import { PaymentResponseDto } from './dto/payment-response.dto';
 import { RefundResponseDto } from './dto/refund-response.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import type { IPaymentsGatewayAdapter } from './interfaces/payments-gateway-adapter.interface';
+import type { PaymentsGatewayAdapter } from './interfaces/payments-gateway-adapter.interface';
 import { IPaymentsService } from './interfaces/payments-service.interface';
 import { CustomerRepository } from './providers/repositories/customer.repository';
 import { PaymentRepository } from './providers/repositories/payment.repository';
@@ -28,7 +28,7 @@ import { RefundRepository } from './providers/repositories/refund.repository';
 export class PaymentsService extends BaseService implements IPaymentsService {
   constructor(
     @Inject(PAYMENTS_GATEWAY_ADAPTER)
-    private readonly pgwAdapter: IPaymentsGatewayAdapter,
+    private readonly pgwAdapter: PaymentsGatewayAdapter,
     @Inject(CUSTOMER_REPOSITORY)
     private readonly customerRepository: CustomerRepository,
     @Inject(PAYMENT_REPOSITORY)

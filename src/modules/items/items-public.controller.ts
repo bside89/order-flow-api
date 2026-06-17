@@ -5,6 +5,8 @@ import type { CursorParams } from '@/shared/types/cursor-params.type';
 import {
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   ParseUUIDPipe,
@@ -37,6 +39,7 @@ export class ItemsPublicController {
   constructor(@Inject(ITEMS_SERVICE) private readonly itemsService: IItemsService) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get all items',
     description: 'Retrieve a cursor-paginated list of items with optional filtering',
@@ -55,6 +58,7 @@ export class ItemsPublicController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get item by ID',
     description:
